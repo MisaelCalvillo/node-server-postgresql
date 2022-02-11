@@ -60,25 +60,32 @@ app.get('/gastos', (req, res) => {
   });
 });
 
-app.get('/login', (req, res) => { 
-  
-  client.query('SELECT (name,password) FROM users WHERE name="testuser";', (err, respuesta) => {
-      if (err) {
-        console.log('Hubo un error');
-      } else {
-        return console.log('No hubo error', respuesta);
-      }
-      client.end(); //cerrar la conexión con la db
-    })
+// Renderizar el archivo login.hbs
+app.get('/login', (req, res) => {
+  res.render('login', {});
 });
 
-/*
-app.get('/login', (req, res) => {
-  //console.log(JSON.stringify(req.body));
-  //console.log(JSON.stringify(req.body.password));
-  //res.render('login');
-  //res.send("Tengo estos datos "+req.body.username+ " and "+req.body.password);
-});*/
+// Traer los datos del HTML form de login.hbs en el body del request (req.body)
+app.post('/login', (req, res) => {
+  const body = req.body;
+  const username = body.username;
+  const password = body.password;
+
+  //console.log('HHHHHH',username, password)
+
+   client.query(`SELECT (name,password) FROM users WHERE name='${username}' and password='${password}';`, (err, respuesta) => {
+       if (err) {
+         console.log(err.stack);
+         return res.send('Oops! Algo salió mal') // Error del query
+       } else {
+         if ( respuesta.rowCount === 0 ){ // Cuando no regresa datos el query. Vacío
+            return res.send('Tu usuario y/o contraseña son incorrectos ❌ ❌ ❌ ❌ ❌');
+         }
+         return res.send('Bienvenido al sistema ✅ ✅ ✅ ✅ ✅'); // Query exitoso
+       }
+       //client.end(); //cerrar la conexión con la db
+     })
+});
 
 app.post('/gasto', (req, res) => {
   // Crear gasto en base de datos
