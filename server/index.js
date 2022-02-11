@@ -60,13 +60,25 @@ app.get('/gastos', (req, res) => {
   });
 });
 
+app.get('/login', (req, res) => { 
+  
+  client.query('SELECT (name,password) FROM users WHERE name="testuser";', (err, respuesta) => {
+      if (err) {
+        console.log('Hubo un error');
+      } else {
+        return console.log('No hubo error', respuesta);
+      }
+      client.end(); //cerrar la conexión con la db
+    })
+});
+
+/*
 app.get('/login', (req, res) => {
   //console.log(JSON.stringify(req.body));
   //console.log(JSON.stringify(req.body.password));
   //res.render('login');
   //res.send("Tengo estos datos "+req.body.username+ " and "+req.body.password);
-
-});
+});*/
 
 app.post('/gasto', (req, res) => {
   // Crear gasto en base de datos
