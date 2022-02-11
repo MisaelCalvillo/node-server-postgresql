@@ -1,8 +1,11 @@
-require('dotenv').config(); //Esta paqueteria se utiliza para poder configurar el .env
+require('dotenv').config();
+console.log(process.env);
+
 const path = require('path');
 const express = require('express');
 const app = express();
-const {Client} = require('pg');
+const { Client } = require('pg');
+const res = require('express/lib/response');
 
 const client = new Client({
   user: process.env.PG_USUARIO,
@@ -14,7 +17,9 @@ const client = new Client({
 
 client.connect();
 
-client
+client.query('SELECT NOW()', (err, res) => {
+  console.log(err, res);
+});
 
 console.log(__dirname);
 console.log(__filename);
@@ -43,15 +48,25 @@ app.get('/about', (req,res) => {
 });
 
 app.get('/gastos', (req, res) => {
+  // Obtener los gastos de la base de datos
   res.render('gastos', {
     gastos: []
   });
 });
 
-app.post('/gasto', (req,res) => {
-  res.send('Se registro un gasto');
-})
 
-app.listen(3001, () => {
-  console.log('El server acaba de inicial en el puerto 3001rs');
+app.post('/gasto', (req, res) => {
+  // Crear gasto en base de datos
+  res.send('Se creo un gasto');
+});
+
+app.listen(3000, () => {
+  console.log('El server acaba de inicial en el puerto 3000');
 }); 
+
+
+// CRUD 
+// Create
+// Read 
+// Delete 
+// Update 
