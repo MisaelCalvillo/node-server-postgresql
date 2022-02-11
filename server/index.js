@@ -60,6 +60,26 @@ app.post('/gasto', (req, res) => {
   res.send('Se creo un gasto');
 });
 
+app.delete('/movimientos/:id/borrar', (req, res) => {
+  const idMovimiento = req.params.id;
+  const query = {
+      text: 'DELETE FROM movimientos WHERE movimiento.id=$1;',
+      values: [idMovimiento],
+  }
+  client.query(query, (err,postgresRes) => {
+    if(err) {
+        console.log(err);
+        return res.send('Hubo un error al borrar :(');
+    } else {
+        if(postgresRes.rowCount === 0) {
+            return res.send('No encontre el valor a eliminar :(')
+        } else {
+            return res.send(`El movimiento con ID ${idMovimiento} fue eliminado correctamente :D`);
+        }
+    }
+  });
+})
+
 app.listen(3000, () => {
   console.log('El server acaba de inicial en el puerto 3000');
 }); 
