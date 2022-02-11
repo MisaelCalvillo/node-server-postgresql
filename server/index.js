@@ -6,6 +6,8 @@ const express = require('express');
 const app = express();
 const { Client } = require('pg');
 const res = require('express/lib/response');
+const bodyParser = require('body-parser'); // Body parsing
+const http = require('http'); // built-in module to transfer data over HTTP
 
 const client = new Client({
   user: process.env.PG_USUARIO,
@@ -36,6 +38,10 @@ app.use((req, res, next) => {
   next();
 });
 
+//parse application/json
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: false}));
+
 app.get('', (req, res) => {
   res.send('Estamos en la ruta raiz!');
 });
@@ -54,6 +60,13 @@ app.get('/gastos', (req, res) => {
   });
 });
 
+app.get('/login', (req, res) => {
+  //console.log(JSON.stringify(req.body));
+  //console.log(JSON.stringify(req.body.password));
+  //res.render('login');
+  //res.send("Tengo estos datos "+req.body.username+ " and "+req.body.password);
+
+});
 
 app.post('/gasto', (req, res) => {
   // Crear gasto en base de datos
