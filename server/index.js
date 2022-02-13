@@ -72,6 +72,12 @@ app.get('/login', (req, res) => {
     })
 });
 
+
+
+
+
+
+
 /*
 app.get('/login', (req, res) => {
   //console.log(JSON.stringify(req.body));
@@ -84,6 +90,10 @@ app.post('/gasto', (req, res) => {
   // Crear gasto en base de datos
   res.send('Se creo un gasto');
 });
+
+
+
+
 
 app.listen(3000, () => {
   console.log('El server acaba de inicial en el puerto 3000');
