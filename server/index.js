@@ -96,6 +96,10 @@ app.post('/gasto', (req, res) => {
   res.send('Se creo un gasto');
 });
 
+
+
+
+
 app.listen(3000, () => {
   console.log('El server acaba de inicial en el puerto 3000');
 }); 
