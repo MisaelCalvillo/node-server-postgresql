@@ -115,7 +115,7 @@ app.post('/user', (req, res) => {
          session = req.session; 
          console.log(session);
          session.userid = req.body.username;
-         return res.send(`Bienvenido al sistema  ✅ ✅ ✅ ✅ ✅ <a href=\'/logout'></a>`); // Query exitoso
+         return res.send(`Bienvenido al sistema ✅ ✅ ✅ ✅ ✅ <a href=\'/logout'>Logout</a>`); // Query exitoso
        }
        //client.end(); //cerrar la conexión con la db
      })
