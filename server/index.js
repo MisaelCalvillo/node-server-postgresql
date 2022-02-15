@@ -9,6 +9,12 @@ const res = require('express/lib/response');
 const bodyParser = require('body-parser'); // Body parsing
 const http = require('http'); // built-in module to transfer data over HTTP
 
+//inicializar variables de sesion
+
+const cookieParser = require('cookie-parser');
+const sessions = require('express-session');
+
+
 const client = new Client({
   user: process.env.PG_USUARIO,
   host: process.env.PG_HOST,
@@ -17,7 +23,22 @@ const client = new Client({
   port: process.env.PORT
 });
 
-client.connect();
+
+client.connect(); //es para conectar
+
+//configurar la session de middleware
+app.use(sessions({
+  secret : "my secret",
+  saveUninitialized : true,
+  cookie : { maxAge:60000 },
+  resave: false
+
+}))
+
+//middleware de cookie parser
+app.use(cookieParser());
+
+var session; //variable para guardar la session
 
 client.query('SELECT NOW()', (err, res) => {
   console.log(err, res);
@@ -62,11 +83,21 @@ app.get('/gastos', (req, res) => {
 
 // Renderizar el archivo login.hbs
 app.get('/login', (req, res) => {
-  res.render('login', {});
+  session = req.session;
+  //console.log(session.userid);
+  //como if para verificar si hay session activa 
+  if(session.userid){
+    res.send("Welcome User <a href=\'/logout'>click to logout</a>");
+  }
+  else{
+    res.render('login', {});
+  }
+ 
 });
 
 // Traer los datos del HTML form de login.hbs en el body del request (req.body)
 app.post('/user', (req, res) => {
+//se trago del body de html (username y password)
   const body = req.body;
   const username = body.username;
   const password = body.password;
@@ -75,21 +106,28 @@ app.post('/user', (req, res) => {
 
    client.query(`SELECT (name,password) FROM users WHERE name='${username}' and password='${password}';`, (err, respuesta) => {
        if (err) {
-         console.log(err.stack);
+         console.log(err.stack); //stack es parte de un objeto, y como stack detalla el error.
          return res.send('Oops! Algo salió mal') // Error del query
        } else {
          if ( respuesta.rowCount === 0 ){ // Cuando no regresa datos el query. Vacío
             return res.send('Tu usuario y/o contraseña son incorrectos ❌ ❌ ❌ ❌ ❌');
          }
-         // traer el nombre de usuario al frontend
-
-         // generar el token
-
-         return res.send('Bienvenido al sistema ✅ ✅ ✅ ✅ ✅'); // Query exitoso
+         session = req.session; 
+         console.log(session);
+         session.userid = req.body.username;
+         return res.send(`Bienvenido al sistema  ✅ ✅ ✅ ✅ ✅ <a href=\'/logout'></a>`); // Query exitoso
        }
        //client.end(); //cerrar la conexión con la db
      })
 });
+
+//esto es para cerrar sessions
+app.get('/logout', (req, res)=>{
+  req.session.destroy();
+  console.log(session);
+  res.redirect('/');
+  
+})
 
 app.post('/gasto', (req, res) => {
   // Crear gasto en base de datos
