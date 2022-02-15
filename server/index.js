@@ -66,7 +66,7 @@ app.get('/login', (req, res) => {
 });
 
 // Traer los datos del HTML form de login.hbs en el body del request (req.body)
-app.post('/login', (req, res) => {
+app.post('/user', (req, res) => {
   const body = req.body;
   const username = body.username;
   const password = body.password;
@@ -81,6 +81,10 @@ app.post('/login', (req, res) => {
          if ( respuesta.rowCount === 0 ){ // Cuando no regresa datos el query. Vacío
             return res.send('Tu usuario y/o contraseña son incorrectos ❌ ❌ ❌ ❌ ❌');
          }
+         // traer el nombre de usuario al frontend
+
+         // generar el token
+
          return res.send('Bienvenido al sistema ✅ ✅ ✅ ✅ ✅'); // Query exitoso
        }
        //client.end(); //cerrar la conexión con la db
