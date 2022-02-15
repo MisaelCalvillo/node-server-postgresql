@@ -24,6 +24,14 @@
     <p id="resRegistro"></p>
   </div>
 
+  <div>
+    <h2>Registrar Movimiento</h2>
+    <input id="monto" type="text" placeholder="ingrese monto" />
+    <input id="categoria" type="text" placeholder="ingrese categoria" />
+    <button onclick="registrarMov()">Registrar movimiento</button>
+    <p id="resRegistroMov"></p>
+  </div>
+
   <script type="application/javascript">
     function sumar() {
       console.log('Función Sumar');
@@ -72,6 +80,31 @@
       .then((res) => res.json())
       .then((data) => {
         resRegistro.innerHTML = data.respuesta;
+      });
+    }
+
+    function registrarMov() {
+      console.log('Función de Registro');
+      const monto = document.getElementById('monto').value;
+      const categoria = document.getElementById('categoria').value;
+      const resRegistroMov = document.getElementById('resRegistroMov');
+
+      console.log({ monto });
+      console.log({ categoria });
+
+      fetch('http://localhost:3000/registrar-movimiento',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          monto: monto,
+          categoria: categoria 
+        }),
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        resRegistroMov.innerHTML = data.respuesta;
       });
     }
   </script>

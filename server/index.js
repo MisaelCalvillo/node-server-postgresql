@@ -89,6 +89,35 @@ app.post('/registro', (req, res) => {
   res.send({ respuesta: `El registro fue exitoso del usuario ${email} fue existoso.` });
 });
 
+app.post('/registrar-movimiento', (req, res) => {
+  const body = req.body;
+  const monto = body.monto;
+  const categoria = body.categoria;
+  
+  console.log({
+    monto, 
+    categoria
+  });
+
+  // SQL Guardar en base de datos
+  const query = {
+    text: 'INSERT INTO movimientos (amount, category) VALUES ($1, $2)',
+    values: [monto, categoria],
+  }
+
+  client.query(query, (err, respuesta) => {
+    if (err) {
+      console.log(err.stack)
+      return res.send('Hubo un erro :(');
+    } else {
+      console.log(respuesta.rows[0])
+      return res.send('Acabo de registrar tu ' + (categoria) + ' por ' + (monto) + ' !');
+    }
+  })
+  // responder la suma de dos numeros 
+  res.send({ respuesta: `Acabo de registrar tu ${categoria} por ${monto}` });
+});
+
 app.post('/gasto', (req, res) => {
   // Crear gasto en base de datos
   res.send('Se creo un gasto');
