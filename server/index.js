@@ -86,6 +86,38 @@ app.get('/gastos', (req, res) => {
   });
 });
 
+// VISTA
+app.get('/test', (req, res) => {
+  res.send({
+    hola: 'hola',
+    cantidad: 2
+  });
+});
+
+app.post('/suma', (req, res) => {
+  const body = req.body;
+  const suma = body.cantidad1 + body.cantidad2;
+  
+  console.log(suma);
+  // responder la suma de dos numeros 
+  res.send(String(suma))
+});
+
+app.post('/registro', (req, res) => {
+  const body = req.body;
+  const email = body.email;
+  const password = body.password;
+  
+  console.log({
+    email, 
+    password
+  });
+
+  // SQL Guardar en base de datos
+
+  // responder la suma de dos numeros 
+  res.send({ respuesta: `El registro fue exitoso del usuario ${email} fue existoso.` });
+});
 // Renderizar el archivo login.hbs
 app.get('/login', (req, res) => {
   session = req.session;
