@@ -43,6 +43,7 @@ app.get('', (req, res) => {
   res.send('Estamos en la ruta raiz!');
 });
 
+// VISTA
 app.get('/about', (req, res) => {
   res.render('about', {
     nombre: 'Misael',
@@ -50,6 +51,7 @@ app.get('/about', (req, res) => {
   })
 });
 
+// VISTA
 app.get('/gastos', (req, res) => {
   // Obtener los gastos de la base de datos
   res.render('gastos', {
@@ -57,6 +59,7 @@ app.get('/gastos', (req, res) => {
   });
 });
 
+// VISTA
 app.get('/test', (req, res) => {
   res.send({
     hola: 'hola',
@@ -101,6 +104,62 @@ app.listen(3000, () => {
 
 // CRUD 
 // Create
+//  - Crear un elemnto (data) genera el (id)
 // Read 
-// Delete 
+//  - Un solo elemento (id)
+//  - Lista de elementos (filtros)
 // Update 
+//  - Actualizar un solo elemento (id)
+// Delete 
+//  - Borrar un solo elemento (id)
+
+// Users 
+// POST "/users" - REGISTRO
+app.post('/users', (req, res) => {
+  console.log('POST /users');
+  
+  // VALIDA DATOS
+  if (!req.body.name) {
+    return res.status(400).json({ 
+      error: 'error-creating-user', 
+      message: 'No pude crear el usuario' 
+    });
+  }
+
+  // CONECTAMOS A POSTGRES
+  const user = {};
+
+  // LÓGICA (opt)
+  return res.status(200).json({ user });
+});
+
+// GET "/users?startDate=2022-01-01&endDate=2020-02-01" - LISTA DE USERS
+app.get('/users', (req, res) => {
+  console.log('GET /users');
+  // VALIDA DATOS
+  // CONECTAMOS A POSTGRES
+  res.status(200).json({ respuesta: 'hola'});
+});
+// GET "/users/:id" - INICIO SESIÓN Y REGISTRO
+app.get('/users/:id', (req, res) => { 
+  console.log('GET /users/:id');
+  // VALIDA DATOS
+  // CONECTAMOS A POSTGRES
+  res.status(200).json({});
+});
+// POST "/users/:id" - ACTUALIZAR
+app.post('/users/:id', (req, res) => { 
+  console.log('POST /users/:id');
+  res.status(200).json({});
+});
+// DELETE "/users/:id" - BORRAR USUARIOS
+
+// NINGUNO REGRESA UNA VISTA - 
+// DEBEN REGRESAR DATOS (JSON)
+
+// Movements
+// POST "/movements" - CREAR MOV.
+// GET "/movements/:id" - VER DETALLES DE UN MOV. 
+// GET "/movements?startDate=2022-01-01&endDate=2020-02-01" - LISTA DE MOV.
+// POST "/movements/:id" - ACTUALIZAR MOV.
+// DELETE "/movements/:id" - BORRAR MOV. 
