@@ -7,7 +7,6 @@ const bodyParser = require('body-parser');
 const app = express();
 const { Client } = require('pg');
 const res = require('express/lib/response');
-const bodyParser = require('body-parser'); // Body parsing
 const http = require('http'); // built-in module to transfer data over HTTP
 
 //inicializar variables de sesion
