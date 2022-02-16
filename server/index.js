@@ -3,6 +3,7 @@ console.log(process.env);
 
 const path = require('path');
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 const { Client } = require('pg');
 const res = require('express/lib/response');
@@ -18,7 +19,7 @@ const client = new Client({
 client.connect();
 
 client.query('SELECT NOW()', (err, res) => {
-  console.log(err, res);
+  // console.log(err, res);
 });
 
 console.log(__dirname);
@@ -29,6 +30,8 @@ app.set('view engine', 'hbs');
 const rutaDePublic = path.join(__dirname, '../public');
 console.log(rutaDePublic);
 app.use(express.static(rutaDePublic));
+
+app.use(bodyParser.json({ type: 'application/json'}))
 
 // Logger 
 app.use((req, res, next) => {
@@ -54,6 +57,37 @@ app.get('/gastos', (req, res) => {
   });
 });
 
+app.get('/test', (req, res) => {
+  res.send({
+    hola: 'hola',
+    cantidad: 2
+  });
+});
+
+app.post('/suma', (req, res) => {
+  const body = req.body;
+  const suma = body.cantidad1 + body.cantidad2;
+  
+  console.log(suma);
+  // responder la suma de dos numeros 
+  res.send(String(suma))
+});
+
+app.post('/registro', (req, res) => {
+  const body = req.body;
+  const email = body.email;
+  const password = body.password;
+  
+  console.log({
+    email, 
+    password
+  });
+
+  // SQL Guardar en base de datos
+
+  // responder la suma de dos numeros 
+  res.send({ respuesta: `El registro fue exitoso del usuario ${email} fue existoso.` });
+});
 
 app.post('/gasto', (req, res) => {
   // Crear gasto en base de datos
