@@ -94,7 +94,7 @@ app.post('/gasto', (req, res) => {
   res.send('Se creo un gasto');
 });
 
-app.delete('/movimientos/:id/borrar', (req, res) => {
+app.delete('/movimientos/:id', (req, res) => {
   const idMovimiento = req.params.id;
   const query = {
       text: 'DELETE FROM movimientos WHERE movimiento.id=$1;',
