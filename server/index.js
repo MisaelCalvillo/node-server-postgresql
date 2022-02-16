@@ -86,10 +86,7 @@ app.get('/gastos', (req, res) => {
   });
 });
 
-<<<<<<< HEAD
 
-=======
->>>>>>> b3c9ac1523e341459e6046e3294bd5199e93aa43
 // VISTA
 app.get('/test', (req, res) => {
   res.send({
@@ -122,10 +119,7 @@ app.post('/registro', (req, res) => {
   // responder la suma de dos numeros 
   res.send({ respuesta: `El registro fue exitoso del usuario ${email} fue existoso.` });
 });
-<<<<<<< HEAD
 
-=======
->>>>>>> b3c9ac1523e341459e6046e3294bd5199e93aa43
 // Renderizar el archivo login.hbs
 app.get('/login', (req, res) => {
   session = req.session;
@@ -173,9 +167,7 @@ app.get('/logout', (req, res)=>{
   res.redirect('/');
   
 })
-<<<<<<< HEAD
 
-=======
 // VISTA
 app.get('/test', (req, res) => {
   res.send({
@@ -208,7 +200,6 @@ app.post('/registro', (req, res) => {
   // responder la suma de dos numeros 
   res.send({ respuesta: `El registro fue exitoso del usuario ${email} fue existoso.` });
 });
->>>>>>> b3c9ac1523e341459e6046e3294bd5199e93aa43
 
 app.post('/gasto', (req, res) => {
   // Crear gasto en base de datos
