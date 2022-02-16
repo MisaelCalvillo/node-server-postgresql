@@ -88,6 +88,7 @@
       const monto = document.getElementById('monto').value;
       const categoria = document.getElementById('categoria').value;
       const resRegistroMov = document.getElementById('resRegistroMov');
+      const user_id = "4eb7e640-1e34-44c9-ae7b-8b520553d5ba";
 
       console.log({ monto });
       console.log({ categoria });
@@ -99,13 +100,24 @@
         },
         body: JSON.stringify({ 
           monto: monto,
-          categoria: categoria 
+          categoria: categoria,
+          user_id: user_id
         }),
       })
-      .then((res) => res.json())
-      .then((data) => {
-        resRegistroMov.innerHTML = data.respuesta;
-      });
+      .then((res) => {
+        
+        if (res.status == 400) {
+          res.json().then((data) => {
+            resRegistroMov.innerHTML = `${data.error}`;
+          })
+        } else{
+          res.json()
+          .then((data) => {
+            console.log(data);
+            resRegistroMov.innerHTML = `Se registró un ${data.category} por ${data.amount} exitosamente`;
+          });
+        }
+      })
     }
   </script>
 </body>
