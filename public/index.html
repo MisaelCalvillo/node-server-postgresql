@@ -10,6 +10,71 @@
 </head>
 <body>
   <h1 class="title">Estamos en la pagina principal</h1>
+  <div>
+    <input id="c1"/>
+    <input id="c2"/>
+    <button onclick="sumar()">Sumar</button>
+    <p id="respuesta"></p>
+  </div>
+
+  <div>
+    <input id="email" type="email" />
+    <input id="password" type="password" />
+    <button onclick="registrar()">Registrar usuario</button>
+    <p id="resRegistro"></p>
+  </div>
+
+  <script type="application/javascript">
+    function sumar() {
+      console.log('Función Sumar');
+      const c1 = document.getElementById('c1');
+      const c2 = document.getElementById('c2');
+      const respuesta = document.getElementById('respuesta');
+
+      const number1 = Number(c1.value);
+      const number2 = Number(c2.value);
+
+      fetch('http://localhost:3000/suma',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          cantidad1: number1,
+          cantidad2: number2 
+        }),
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        respuesta.innerHTML = data;
+      });
+    }
+
+    function registrar() {
+      console.log('Función de Registro');
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const resRegistro = document.getElementById('resRegistro');
+
+      console.log({ email });
+      console.log({ password });
+
+      fetch('http://localhost:3000/registro',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          email: email,
+          password: password 
+        }),
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        resRegistro.innerHTML = data.respuesta;
+      });
+    }
+  </script>
   <p>Es hora de empezar</p>
 
 </body>
