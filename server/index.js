@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const { Client } = require('pg');
 const res = require('express/lib/response');
+const async = require('hbs/lib/async');
 
 const client = new Client({
   user: process.env.PG_USUARIO,
@@ -90,6 +91,60 @@ app.post('/registro', (req, res) => {
 
   // responder la suma de dos numeros 
   res.send({ respuesta: `El registro fue exitoso del usuario ${email} fue existoso.` });
+});
+
+app.post('/registrar-movimiento', async (req, res) => {
+  const body = req.body;
+  const monto = body.monto;
+  const categoria = body.categoria;
+  const user_id = body.user_id;
+  
+  console.log({
+    monto, 
+    categoria
+  });
+
+  // SQL Guardar en base de datos
+  const query = {
+    text: 'INSERT INTO movimientos (user_id, amount, category) VALUES ($1, $2, $3)',
+    values: [user_id, monto, categoria],
+  }
+
+  const query2 = {
+    text: `SELECT * FROM movimientos WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1;`,
+    values: [user_id]
+  }
+
+  try {
+    console.log("respuesta");
+    const respuesta = await client.query(query)
+    console.log(respuesta)
+  } catch (err) {
+    console.log(err.stack)
+    res.status(400).json({
+      error: err.message
+    })
+  }
+
+  let movimiento = null;
+  //try {
+    const respuesta = await client.query(query2)
+    movimiento = respuesta.rows[0];
+    console.log(respuesta.rows[0]);
+  /*} catch (error) {
+    console.log(error.stack)
+  }*/
+  res.status(200).json(movimiento);
+
+  /*if (err) {
+    console.log(err.stack)
+    return respuesta.send('Hubo un erro :(');
+  } else {
+    console.log(respuesta.rows[0])
+    return respuesta.send('Acabo de registrar tu ' + (categoria) + ' por ' + (monto) + ' !');
+  }*/
+  // responder la suma de dos numeros 
+  //res.send({ respuesta: `Usuario: ${user_id} Acabo de registrar tu ${categoria} por ${monto}` });
 });
 
 app.post('/gasto', (req, res) => {
