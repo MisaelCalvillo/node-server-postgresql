@@ -100,7 +100,7 @@ app.post('/gasto', (req, res) => {
 app.delete('/movimientos/:id', (req, res) => {
   const idMovimiento = req.params.id;
   const query = {
-      text: 'DELETE FROM movimientos WHERE movimiento.id=$1;',
+      text: 'DELETE FROM movimientos WHERE movimientos.id=$1;',
       values: [idMovimiento],
   }
   client.query(query, (err,postgresRes) => {
