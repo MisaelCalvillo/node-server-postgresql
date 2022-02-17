@@ -117,9 +117,9 @@ app.post('/registro', (req, res) => {
 // Renderizar el archivo login.hbs
 app.get('/login', (req, res) => {
   session = req.session;
-  //console.log(session.userid);
+  //console.log(session.email);
   //como if para verificar si hay session activa 
-  if(session.userid){
+  if(session.email){
     res.send("Welcome User <a href=\'/logout'>click to logout</a>");
   }
   else{
@@ -132,12 +132,12 @@ app.get('/login', (req, res) => {
 app.post('/user', (req, res) => {
 //se trago del body de html (username y password)
   const body = req.body;
-  const username = body.username;
+  const email = body.email;
   const password = body.password;
 
-  //console.log('HHHHHH',username, password)
+  console.log('HHHHHH',email, password)
 
-   client.query(`SELECT (name,password) FROM users WHERE name='${username}' and password='${password}';`, (err, respuesta) => {
+   client.query(`SELECT (email,password) FROM users WHERE email='${email}' and password='${password}';`, (err, respuesta) => {
        if (err) {
          console.log(err.stack); //stack es parte de un objeto, y como stack detalla el error.
          return res.send('Oops! Algo salió mal') // Error del query
@@ -147,7 +147,7 @@ app.post('/user', (req, res) => {
          }
          session = req.session; 
          console.log(session);
-         session.userid = req.body.username;
+         session.email = req.body.email;
          return res.send(`Bienvenido al sistema ✅ ✅ ✅ ✅ ✅ <a href=\'/logout'>Logout</a>`); // Query exitoso
        }
        //client.end(); //cerrar la conexión con la db
