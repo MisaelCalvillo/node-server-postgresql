@@ -98,6 +98,7 @@ app.post('/suma', (req, res) => {
   res.send(String(suma))
 });
 
+/*
 app.post('/registro', (req, res) => {
   const body = req.body;
   const email = body.email;
@@ -113,6 +114,7 @@ app.post('/registro', (req, res) => {
   // responder la suma de dos numeros 
   res.send({ respuesta: `El registro fue exitoso del usuario ${email} fue existoso.` });
 });
+*/
 
 // Renderizar el archivo login.hbs
 app.get('/login', (req, res) => {
@@ -135,20 +137,28 @@ app.post('/user', (req, res) => {
   const email = body.email;
   const password = body.password;
 
-  console.log('HHHHHH',email, password)
+  //console.log('HHHHHH',email, password)
 
-   client.query(`SELECT (email,password) FROM users WHERE email='${email}' and password='${password}';`, (err, respuesta) => {
+   client.query(`SELECT * FROM users WHERE email='${email}';`, (err, respuesta) => {
        if (err) {
          console.log(err.stack); //stack es parte de un objeto, y como stack detalla el error.
          return res.send('Oops! Algo salió mal') // Error del query
        } else {
          if ( respuesta.rowCount === 0 ){ // Cuando no regresa datos el query. Vacío
-            return res.send('Tu usuario y/o contraseña son incorrectos ❌ ❌ ❌ ❌ ❌');
+            return res.status(400).json({error: 'Tu e-mail no se encuentra en la DB'});
          }
-         session = req.session; 
-         console.log(session);
-         session.email = req.body.email;
-         return res.send(`Bienvenido al sistema ✅ ✅ ✅ ✅ ✅ <a href=\'/logout'>Logout</a>`); // Query exitoso
+         const userData = respuesta.rows[0];
+         const encryptedPassword = userData.password;
+         const isCorrect = bcryptjs.compareSync(password, encryptedPassword);
+         //console.log(isCorrect);
+         if (isCorrect) {
+            return res.status(200).json(userData); // Query exitoso
+         }
+            return res.status(400).json({error: 'Tu password es incorrecto'});
+         //session = req.session; 
+         //console.log(session);
+         //session.email = req.body.email;
+         
        }
        //client.end(); //cerrar la conexión con la db
      })
