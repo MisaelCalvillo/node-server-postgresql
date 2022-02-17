@@ -3,7 +3,7 @@ console.log(process.env);
 
 const path = require('path');
 const express = require('express');
-
+const bodyParser = require('body-parser');
 const app = express();
 const { Client } = require('pg');
 const res = require('express/lib/response');
