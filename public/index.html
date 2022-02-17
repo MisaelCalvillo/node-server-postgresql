@@ -15,7 +15,8 @@
       <button onclick="sumar()">Sumar</button>
       <p id="respuesta"></p>
     </div>
-
+    
+    <p>Es hora de empezar</p>
     <div>
       <input id="name" type="text" placeholder="nombre" />
       <input id="nickname" type="text" placeholder="nickname" />
@@ -93,11 +94,22 @@
           }
         })
 
-        // .then((data) => {
-        //   console.log(data)
-        //   resRegistro.innerHTML = data.respuesta
-        // })
-      }
-    </script>
-  </body>
+      fetch('http://localhost:3000/registro',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          email: email,
+          password: password 
+        }),
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        resRegistro.innerHTML = data.respuesta;
+      });
+    }
+  </script>
+
+</body>
 </html>

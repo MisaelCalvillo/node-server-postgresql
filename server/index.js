@@ -2,12 +2,17 @@ require('dotenv').config()
 console.log(process.env)
 const bcryptjs = require('bcryptjs')
 
-const path = require('path')
-const express = require('express')
-const bodyParser = require('body-parser')
-const app = express()
-const { Client } = require('pg')
-const res = require('express/lib/response')
+const path = require('path');
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const { Client } = require('pg');
+const http = require('http'); // built-in module to transfer data over HTTP
+
+//inicializar variables de sesion
+
+const cookieParser = require('cookie-parser');
+const sessions = require('express-session');
 
 const client = new Client({
   user: process.env.PG_USUARIO,
@@ -17,7 +22,21 @@ const client = new Client({
   port: process.env.PORT,
 })
 
-client.connect()
+client.connect(); //es para conectar
+
+//configurar la session de middleware
+app.use(sessions({
+  secret : "my secret",
+  saveUninitialized : true,
+  cookie : { maxAge:60000 },
+  resave: false
+
+}))
+
+//middleware de cookie parser
+app.use(cookieParser());
+
+var session; //variable para guardar la session
 
 client.query('SELECT NOW()', (err, res) => {
   // console.log(err, res);
@@ -40,6 +59,10 @@ app.use((req, res, next) => {
   next()
 })
 
+//parse application/json
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: false}));
+
 app.get('', (req, res) => {
   res.send('Estamos en la ruta raiz!')
 })
@@ -58,6 +81,98 @@ app.get('/gastos', (req, res) => {
   })
 })
 
+// VISTA
+app.get('/test', (req, res) => {
+  res.send({
+    hola: 'hola',
+    cantidad: 2
+  });
+});
+
+app.post('/suma', (req, res) => {
+  const body = req.body;
+  const suma = body.cantidad1 + body.cantidad2;
+  
+  console.log(suma);
+  // responder la suma de dos numeros 
+  res.send(String(suma))
+});
+
+/*
+app.post('/registro', (req, res) => {
+  const body = req.body;
+  const email = body.email;
+  const password = body.password;
+  
+  console.log({
+    email, 
+    password
+  });
+
+  // SQL Guardar en base de datos
+
+  // responder la suma de dos numeros 
+  res.send({ respuesta: `El registro fue exitoso del usuario ${email} fue existoso.` });
+});
+*/
+
+// Renderizar el archivo login.hbs
+app.get('/login', (req, res) => {
+  session = req.session;
+  //console.log(session.email);
+  //como if para verificar si hay session activa 
+  if(session.email){
+    res.send("Welcome User <a href=\'/logout'>click to logout</a>");
+  }
+  else{
+    res.render('login', {});
+  }
+ 
+});
+
+// Traer los datos del HTML form de login.hbs en el body del request (req.body)
+app.post('/user', (req, res) => {
+//se trago del body de html (username y password)
+  const body = req.body;
+  const email = body.email;
+  const password = body.password;
+
+  //console.log('HHHHHH',email, password)
+
+   client.query(`SELECT * FROM users WHERE email='${email}';`, (err, respuesta) => {
+       if (err) {
+         console.log(err.stack); //stack es parte de un objeto, y como stack detalla el error.
+         return res.send('Oops! Algo salió mal') // Error del query
+       } else {
+         if ( respuesta.rowCount === 0 ){ // Cuando no regresa datos el query. Vacío
+            return res.status(400).json({error: 'Tu e-mail no se encuentra en la DB'});
+         }
+         const userData = respuesta.rows[0];
+         const encryptedPassword = userData.password;
+         const isCorrect = bcryptjs.compareSync(password, encryptedPassword);
+         //console.log(isCorrect);
+         if (isCorrect) {
+            return res.status(200).json(userData); // Query exitoso
+         }
+            return res.status(400).json({error: 'Tu password es incorrecto'});
+         //session = req.session; 
+         //console.log(session);
+         //session.email = req.body.email;
+         
+       }
+       //client.end(); //cerrar la conexión con la db
+     })
+});
+
+//esto es para cerrar sessions
+app.get('/logout', (req, res)=>{
+  req.session.destroy();
+  console.log(session);
+  res.redirect('/');
+  
+})
+
+// VISTA
 app.get('/test', (req, res) => {
   res.send({
     hola: 'hola',
@@ -126,9 +241,9 @@ app.post('/registro', async (req, res) => {
 
 app.post('/gasto', (req, res) => {
   // Crear gasto en base de datos
-
   res.send('Se creo un gasto')
 })
+
 
 app.listen(3000, () => {
   console.log('El server acaba de inicial en el puerto 3000')
