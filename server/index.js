@@ -13,7 +13,7 @@ const client = new Client({
   host: process.env.PG_HOST,
   database: process.env.PG_DATABASE,
   password: process.env.PG_PASSWORD,
-  port: process.env.PORT
+  port: process.env.PG_PORT
 });
 
 client.connect();
@@ -46,8 +46,8 @@ app.get('', (req, res) => {
 // VISTA
 app.get('/about', (req, res) => {
   res.render('about', {
-    nombre: 'Misael',
-    apellido: 'Calvillo Mancilla'
+    nombre: 'Adrian',
+    apellido: 'Nieto'
   })
 });
 
@@ -96,6 +96,26 @@ app.post('/gasto', (req, res) => {
   // Crear gasto en base de datos
   res.send('Se creo un gasto');
 });
+
+app.delete('/movimientos/:id', (req, res) => {
+  const idMovimiento = req.params.id;
+  const query = {
+      text: 'DELETE FROM movimientos WHERE movimientos.id=$1;',
+      values: [idMovimiento],
+  }
+  client.query(query, (err,postgresRes) => {
+    if(err) {
+        console.log(err);
+        return res.send('Hubo un error al borrar :(');
+    } else {
+        if(postgresRes.rowCount === 0) {
+            return res.send('No encontre el valor a eliminar :(')
+        } else {
+            return res.send(`El movimiento con ID ${idMovimiento} fue eliminado correctamente :D`);
+        }
+    }
+  });
+})
 
 app.listen(3000, () => {
   console.log('El server acaba de inicial en el puerto 3000');
