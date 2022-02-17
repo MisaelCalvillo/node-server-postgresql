@@ -121,8 +121,8 @@ app.get('/login', (req, res) => {
   session = req.session;
   //console.log(session.email);
   //como if para verificar si hay session activa 
-  if(session.email){
-    res.send("Welcome User <a href=\'/logout'>click to logout</a>");
+  if(session.email){ //trae el dato para compararlo y mandar como sesion iniciada
+    return res.status(200).json(session.email);
   }
   else{
     res.render('login', {});
@@ -131,7 +131,7 @@ app.get('/login', (req, res) => {
 });
 
 // Traer los datos del HTML form de login.hbs en el body del request (req.body)
-app.post('/user', (req, res) => {
+app.post('/login', (req, res) => {
 //se trago del body de html (username y password)
   const body = req.body;
   const email = body.email;
@@ -147,18 +147,16 @@ app.post('/user', (req, res) => {
          if ( respuesta.rowCount === 0 ){ // Cuando no regresa datos el query. Vacío
             return res.status(400).json({error: 'Tu e-mail no se encuentra en la DB'});
          }
-         const userData = respuesta.rows[0];
+         const userData = respuesta.rows[0]; 
          const encryptedPassword = userData.password;
          const isCorrect = bcryptjs.compareSync(password, encryptedPassword);
          //console.log(isCorrect);
          if (isCorrect) {
+            session = req.session;
+            session.email = req.body.email; 
             return res.status(200).json(userData); // Query exitoso
          }
             return res.status(400).json({error: 'Tu password es incorrecto'});
-         //session = req.session; 
-         //console.log(session);
-         //session.email = req.body.email;
-         
        }
        //client.end(); //cerrar la conexión con la db
      })

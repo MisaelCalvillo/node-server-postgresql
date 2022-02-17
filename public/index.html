@@ -16,7 +16,6 @@
       <p id="respuesta"></p>
     </div>
     
-    <p>Es hora de empezar</p>
     <div>
       <input id="name" type="text" placeholder="nombre" />
       <input id="nickname" type="text" placeholder="nickname" />
@@ -27,6 +26,15 @@
       <button onclick="registrar()">Registrar usuario</button>
       <p id="resRegistro"></p>
     </div>
+
+    <div>
+      <h2> Iniciar Sesión </h2>
+      <input id="emailLogin" type="email" placeholder="e-mail" />
+      <input id="passwordLogin" type="password" placeholder="contaseña" />
+      <button onclick="iniciarSesion()">Iniciar Sesión</button>
+      <p id="respuestaLogin"></p>
+    </div>
+
     <script type="application/javascript">
       function sumar() {
         console.log('Función Sumar')
@@ -93,21 +101,32 @@
             })
           }
         })
+    }
 
-      fetch('http://localhost:3000/registro',{
+    function iniciarSesion(){
+      // traemos los valores email y password del HTML para iniciar sesión
+      const email = document.getElementById('emailLogin').value 
+      const password = document.getElementById('passwordLogin').value
+
+      fetch('http://localhost:3000/login',{ //llamar al endpoint app.post('/login')
+      //fetch necesita method, headers, body y la promesa o promesas
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ // convertir a JSON
           email: email,
-          password: password 
-        }),
+          password: password
+        })
+      }).then((res) => { //promesa para traer el res.status
+        if (res.status === 400){ // si el codigo de error es 400. Viene de los settings del endpoint en index.js
+          res.json().then((data) => {
+            respuestaLogin.innerHTML = data.error; // muestra en HTML el elemento error del objeto respuesta. Puede ser error en email o error en pwd
+          })
+        } else {
+          res.json().then((data) => { // si el codigo de error es diferente a 400. En este caso 200
+            respuestaLogin.innerHTML = `Hola ${data.name} !! 🙉` // Data aquí es un objeto que contiene los datos del user en la DB. Sólo usamos el nombre para saludar
+          })
+        }
       })
-      .then((res) => res.json())
-      .then((data) => {
-        resRegistro.innerHTML = data.respuesta;
-      });
     }
   </script>
 
