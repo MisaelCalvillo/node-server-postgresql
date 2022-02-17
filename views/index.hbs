@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis gastos</title>    
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;      
+      font-family: 'Roboto', sans-serif;
+    }
+    ::-webkit-scrollbar {
+        width: 8px;
+    }      
+    ::-webkit-scrollbar-thumb {
+        -webkit-border-radius: 10px;
+        border-radius: 10px;
+        background: rgba(39, 30, 30, 0.8);
+    }
+    #container{
+      display: grid;
+      place-items: center;      
+      grid-template-rows: 70px 130px 1fr;
+    }
+    .title{
+      align-self: flex-end;
+    }
+    form{
+      display: flex;
+      gap:10px;
+    }
+    input{
+      padding: 5px;
+      border-radius: 5px;
+      border: 1px solid lightgray;
+    }
+    button{
+      padding: 8px;
+      width: 100px;
+      border: none;
+      border-radius: 5px;
+      background-color: #3c8d6b;
+      color: #fff;
+    }
+    button:hover{
+      cursor: pointer;
+      background-color: #66af12;
+      color: #fff;
+    }
+    table{
+      border-top:1px solid coral;      
+    }
+    th,td{
+      border-bottom:1px solid red;      
+      padding: 10px;
+      text-align: center;
+    }
+    @media (max-width:567px){
+      form{
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      button{
+        width:100%
+      }
+      
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1 class="title">{{title}}</h1>
+    <form id="form">
+      <div>
+        <label for="inicio">Inicio</label>
+        <input id="inicio" type="date" />
+      </div>
+      <div>
+        <label for="fin">Fin</label>
+        <input id="fin" type="date" />
+      </div>
+      <button >Filtrar</button>
+    </form>
+    <p id="message"></p>
+    <table id="table">
+      <thead id="table_header">
+        <th>Nº</th>
+        <th>Nickname</th>
+        <th>Name</th>
+        <th>Date</th>
+        <th>Amount</th>
+      </thead>    
+      <tbody id="table-body"></tbody>
+    </table>
+    
+
+  </div>
+</body>
+<script>  
+  (function(){    
+    getFilterData()
+  })()
+  document.getElementById("form").addEventListener("submit", function(e) {
+    e.preventDefault(); // stop form submission
+    getFilterData()  
+  });
+  
+  function clearTable(){
+    const table = document.getElementById('table-body')
+    table.innerHTML=""
+  }
+  function setData(table,data){
+    for(let i=0;i<data.length;i++) {      
+      var row = table.insertRow(i);      
+      var cell1 = row.insertCell(0);
+      var cell2 = row.insertCell(1);
+      var cell3 = row.insertCell(2);
+      var cell4 = row.insertCell(3);
+      var cell5 = row.insertCell(4);      
+      let newCreated = new Date(data[i].created_at).toString().split(' ')
+      let datef= newCreated[2]+' '+newCreated[1]+' '+newCreated[3]
+      cell1.innerHTML = (i+1)
+      cell2.innerHTML = (data[i].nickname)
+      cell3.innerHTML = (data[i].name)
+      cell4.innerHTML = (datef)
+      cell5.innerHTML = ('$'+data[i].amount)
+    }
+  }
+
+  async function getFilterData() { 
+    clearTable()
+    const inicio = document.getElementById('inicio').value
+    const fin = document.getElementById('fin').value
+    const filtered = await fetch(`http://localhost:3006/movimientos?inicio=${inicio}&&fin=${fin}`)    
+    const {data} = await filtered.json()
+    const table = document.getElementById('table')
+    const element = document.getElementById('message')    
+    if(data.length===0){      
+      element.innerHTML='No se encontraron movimientos'
+      table.style.display="none"
+      element.style.display="block"
+
+    }
+    else{
+      table.style.display="block"
+      element.style.display="none"
+      const tableBody = document.getElementById('table-body')
+      setData(tableBody,data)
+    }
+  }  
+  
+</script>
+</html>
